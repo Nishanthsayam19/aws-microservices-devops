@@ -1,8 +1,15 @@
+
 pipeline {
     agent any
 
     options {
         timestamps()
+    }
+
+    environment {
+        AWS_REGION = 'ap-south-1'
+        AWS_ACCOUNT_ID = '551336603749'
+        ECR_REGISTRY = '551336603749.dkr.ecr.ap-south-1.amazonaws.com'
     }
 
     stages {
@@ -47,11 +54,47 @@ pipeline {
                 bat 'docker images'
             }
         }
+
+        stage('Login to Amazon ECR') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'aws-ecr-credentials',
+                    usernameVariable: 'AWS_ACCESS_KEY_ID',
+                    passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                )]) {
+                    bat '''
+                        set AWS_DEFAULT_REGION=ap-south-1
+                        aws sts get-caller-identity
+                        aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 551336603749.dkr.ecr.ap-south-1.amazonaws.com
+                    '''
+                }
+            }
+        }
+
+        stage('Tag Images for ECR') {
+            steps {
+                bat '''
+                    docker tag user-service:latest 551336603749.dkr.ecr.ap-south-1.amazonaws.com/user-service:latest
+                    docker tag product-service:latest 551336603749.dkr.ecr.ap-south-1.amazonaws.com/product-service:latest
+                    docker tag order-service:latest 551336603749.dkr.ecr.ap-south-1.amazonaws.com/order-service:latest
+                '''
+            }
+        }
+
+        stage('Push Images to ECR') {
+            steps {
+                bat '''
+                    docker push 551336603749.dkr.ecr.ap-south-1.amazonaws.com/user-service:latest
+                    docker push 551336603749.dkr.ecr.ap-south-1.amazonaws.com/product-service:latest
+                    docker push 551336603749.dkr.ecr.ap-south-1.amazonaws.com/order-service:latest
+                '''
+            }
+        }
     }
 
     post {
         success {
-            echo 'All three microservice Docker images built successfully!'
+            echo 'All three microservice Docker images built and pushed to Amazon ECR successfully!'
         }
         failure {
             echo 'Pipeline failed. Check the Console Output.'
