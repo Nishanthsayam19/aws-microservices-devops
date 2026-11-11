@@ -93,7 +93,7 @@ pipeline {
         stage('Deploy to EC2') {
             steps {
                 bat '''
-                    ssh -o StrictHostKeyChecking=accept-new -i "C:\\ProgramData\\Jenkins\\secrets\\training-key.pem" ubuntu@15.206.117.145 "cd ~/aws-microservices-devops && aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 551336603749.dkr.ecr.ap-south-1.amazonaws.com && IMAGE_TAG=%BUILD_NUMBER% docker compose pull && IMAGE_TAG=%BUILD_NUMBER% docker compose up -d && for i in 1 2 3 4 5 6 7 8 9 10 11 12; do if curl -fsS http://localhost/users/health >/dev/null && curl -fsS http://localhost/products/health >/dev/null && curl -fsS http://localhost/orders/health >/dev/null; then echo DEPLOYMENT_SUCCESS; exit 0; fi; sleep 5; done; echo DEPLOYMENT_FAILED; exit 1"
+                    ssh -o StrictHostKeyChecking=accept-new -i "C:\\ProgramData\\Jenkins\\secrets\\training-key.pem" ubuntu@65.0.168.124 "cd ~/aws-microservices-devops && aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 551336603749.dkr.ecr.ap-south-1.amazonaws.com && IMAGE_TAG=%BUILD_NUMBER% docker compose pull && IMAGE_TAG=%BUILD_NUMBER% docker compose up -d && for i in 1 2 3 4 5 6 7 8 9 10 11 12; do if curl -fsS http://localhost/users/health >/dev/null && curl -fsS http://localhost/products/health >/dev/null && curl -fsS http://localhost/orders/health >/dev/null; then echo DEPLOYMENT_SUCCESS; exit 0; fi; sleep 5; done; echo DEPLOYMENT_FAILED; exit 1"
                 '''
             }
         }
