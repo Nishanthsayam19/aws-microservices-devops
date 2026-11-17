@@ -95,7 +95,7 @@ pipeline {
                 bat '''
                     scp -o StrictHostKeyChecking=accept-new -i "C:\\ProgramData\\Jenkins\\secrets\\training-key.pem" deploy-with-rollback.sh ubuntu@13.233.27.80:~/aws-microservices-devops/deploy-with-rollback.sh
 
-                    ssh -o StrictHostKeyChecking=accept-new -i "C:\\ProgramData\\Jenkins\\secrets\\training-key.pem" ubuntu@13.233.27.80 "sed -i 's/\r$//' ~/aws-microservices-devops/deploy-with-rollback.sh && chmod +x ~/aws-microservices-devops/deploy-with-rollback.sh && ~/aws-microservices-devops/deploy-with-rollback.sh %BUILD_NUMBER%"
+                    ssh -o StrictHostKeyChecking=accept-new -i "C:\\ProgramData\\Jenkins\\secrets\\training-key.pem" ubuntu@13.233.27.80 "sed -i 's/[[:cntrl:]]$//' ~/aws-microservices-devops/deploy-with-rollback.sh && chmod +x ~/aws-microservices-devops/deploy-with-rollback.sh && ~/aws-microservices-devops/deploy-with-rollback.sh %BUILD_NUMBER%"
                 '''
             }
         }
