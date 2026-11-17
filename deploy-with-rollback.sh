@@ -80,6 +80,7 @@ if IMAGE_TAG="$PREVIOUS_VERSION" docker compose pull &&
    IMAGE_TAG="$PREVIOUS_VERSION" docker compose up -d --force-recreate nginx &&
    check_health; then
 
+    printf '%s\n' "$PREVIOUS_VERSION" > "$STATE_FILE"
     echo "ROLLBACK_SUCCESS: Restored version $PREVIOUS_VERSION"
     exit 1
 fi
